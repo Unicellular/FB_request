@@ -12,7 +12,7 @@ END
   def index
     fbrequest
     @posts = Fbpost.all #first
-    render json: (@posts.map { |post| [post['id'],post['fb_id'], post['message']] })
+    render json: @posts
   end
 
   private
@@ -20,28 +20,27 @@ END
     uri = URI(FBREQUESTURL)
     res = Net::HTTP.get_response(uri)
     data = JSON.parse(res.body)['data']
-    data.map! do |post|
-      post['from_name'] = post['from']['name']
-      post['from_id'] = post['from']['id']
-      post['likes_count'] = 
-	post['likes'] ? post['likes']['summary']['total_count'] : 0
-      post['shares_count'] =
-      	post['shares'] ? post['shares']['count'] : 0
-      post['comments_count'] = 
-	post['comments'] ? post['comments']['summary']['total_count'] : 0
-      post['hotscore'] = post['likes_count'] + 5 * post['shares_count'] + 2 * post['comments_count']
-      post.delete('from')
-      post.delete('likes')
-      post.delete('shares')
-      post.delete('comments')
-      post['fb_id'] = post.delete('id')
-      post['fb_type'] = post.delete('type')
-      post['fb_object_id'] = post.delete('object_id')
-      post
-    end
-
+    transform(data)
     data.each do |post|
       Fbpost.create!(post) unless Fbpost.exists?( :fb_id => post['fb_id'] )
     end
   end
+
+  def transform( data )
+    data.map! do |post|
+      post.merge!( {
+	'from_name' => post['from']['name'],
+	'from_id' => post['from']['id'],
+	'fb_id' => post.delete('id'),
+	'fb_type' => post.delete('type'),
+	'fb_object_id' => post.delete('object_id'),
+	'likes_count' => (post['likes'] ? post['likes']['summary']['total_count'] : 0),
+	'shares_count' => (post['shares'] ? post['shares']['count'] : 0),
+	'comments_count' => (post['comments'] ? post['comments']['summary']['total_count'] : 0),
+      } )
+      post['hotscore'] = post['likes_count'] + 5 * post['shares_count'] + 2 * post['comments_count']
+      post.except!('from', 'likes', 'shares', 'comments')
+    end
+  end
+ 
 end
