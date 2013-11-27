@@ -1,5 +1,6 @@
 Fbgraph::Application.routes.draw do
   root "fb_graph#index"
+  get "/request", to: "fb_graph#fbrequest", as: "request"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

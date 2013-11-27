@@ -10,11 +10,9 @@ BIwIQyG2p4mLvgSwJQLERdtek2ZB0gM6PHjZAD7ZBNjZB1JXjALsiC9eo
 END
   
   def index
-    fbrequest
     @posts = Fbpost.all 
   end
 
-  private
   def fbrequest
     uri = URI(FBREQUESTURL)
     res = Net::HTTP.get_response(uri)
@@ -23,7 +21,9 @@ END
     data.each do |post|
       Fbpost.create!(post) unless exists_or_nopic?(post)
     end
+    redirect_to root_url
   end
+  private
 
   def exists_or_nopic?( post )
     Fbpost.exists?( :fb_id => post['fb_id'] ) || post['picture'].nil?
