@@ -1,0 +1,9 @@
+<% @posts.each do |post| %>
+  <% if @posts.index(post) % 4 == 0 %>
+    <div class="row">
+  <% end %>
+  <div class="col-md-3"><%= image_tag post.picture %></div>
+  <% if @posts.index(post) % 4 == 3 || post === @posts.last %>
+    </div>
+  <% end %>
+<% end %>

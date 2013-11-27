@@ -1,0 +1,13 @@
+@import "bootstrap";
+
+.row {
+  padding: 5px 0;
+  .col-md-3 {
+    height: 220px;
+    padding: 0 5px;
+    img {
+      width: 100%;
+      height: inherit;
+    }
+  }
+}

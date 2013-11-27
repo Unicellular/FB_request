@@ -11,8 +11,7 @@ END
   
   def index
     fbrequest
-    @posts = Fbpost.all #first
-    render json: @posts
+    @posts = Fbpost.all 
   end
 
   private
@@ -22,7 +21,9 @@ END
     data = JSON.parse(res.body)['data']
     transform(data)
     data.each do |post|
-      Fbpost.create!(post) unless Fbpost.exists?( :fb_id => post['fb_id'] )
+      Fbpost.create!(post) unless 
+	Fbpost.exists?( :fb_id => post['fb_id'] ) ||
+	post['picture'].nil?
     end
   end
 
