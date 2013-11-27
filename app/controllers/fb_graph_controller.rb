@@ -21,11 +21,13 @@ END
     data = JSON.parse(res.body)['data']
     transform(data)
     data.each do |post|
-      Fbpost.create!(post) unless 
-	Fbpost.exists?( :fb_id => post['fb_id'] ) ||
-	post['picture'].nil?
+      Fbpost.create!(post) unless exists_or_nopic?(post)
     end
   end
+
+  def exists_or_nopic?( post )
+    Fbpost.exists?( :fb_id => post['fb_id'] ) || post['picture'].nil?
+  end 
 
   def transform( data )
     data.map! do |post|
