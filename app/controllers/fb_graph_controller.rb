@@ -1,3 +1,5 @@
+require "net/http"
+
 class FbGraphController < ApplicationController
   FBREQUESTURL = <<END
 https://graph.facebook.com/123103684386135/posts\
@@ -15,8 +17,8 @@ END
 
   def fbrequest
     uri = URI(FBREQUESTURL)
-    res = ::Net::HTTP.get_response(uri)
-    data = ::JSON.parse(res.body)['data']
+    res = Net::HTTP.get_response(uri)
+    data = JSON.parse(res.body)['data']
     transform(data)
     data.each do |post|
       Fbpost.create!(post) unless exists_or_nopic?(post)
