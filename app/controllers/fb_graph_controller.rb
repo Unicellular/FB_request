@@ -15,8 +15,8 @@ END
 
   def fbrequest
     uri = URI(FBREQUESTURL)
-    res = Net::HTTP.get_response(uri)
-    data = JSON.parse(res.body)['data']
+    res = ::Net::HTTP.get_response(uri)
+    data = ::JSON.parse(res.body)['data']
     transform(data)
     data.each do |post|
       Fbpost.create!(post) unless exists_or_nopic?(post)
